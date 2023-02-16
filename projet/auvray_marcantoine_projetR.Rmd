@@ -13,6 +13,7 @@ Marc-Antoine
 
 # Projet - Explication du prix du gazole
 
+
 Ce projet a pour objectifs de :
 
 -Créer un data.frame à partir du fichier PrixCarburants_quotidien_20221215.xml et l’enrichir avec des données externes;
@@ -427,11 +428,30 @@ load_rafineries
 
 # Partie 2 : Analyse unidimensionnelle de chaque variable;
 
+Le code de cette partie est dans app.R.
+
+Voici quelques exemples de graphiques disponibles :
+
+![a](C:/Users/mauvray/Downloads/r/projet_R/projet/images/unidim1.png)
+
+![b](C:/Users/mauvray/Downloads/r/projet_R/projet/images/unidim2.png)
+
+![c](C:/Users/mauvray/Downloads/r/projet_R/projet/images/unidim3.png)
+
+![d](C:/Users/mauvray/Downloads/r/projet_R/projet/images/unidim4.png)
+
 # Partie 3 : Analyse bidimensionnelle;
 
-# Partie 4 : Cartographie;
+Le code de cette partie est dans app.R.
 
+Voici quelques exemples de graphiques disponibles :
+
+![e](C:/Users/mauvray/Downloads/r/projet_R/projet/images/bidim1.png)
+
+![f](C:/Users/mauvray/Downloads/r/projet_R/projet/images/bidim2.png)
 ```{r}
+library(htmltools)
+library(rvest)
 # relancer le code du Rmarkown sur les cartes
 rmarkdown::render(input = "cartes.Rmd", 
                   output_file = sprintf("cartes.html"), quiet = TRUE)
@@ -454,4 +474,13 @@ modele_lineaire
 print("table_prediction : ")
 table_prediction
 ```
+
+
+Quelques exemples de sorties possibles :
+
+Le code de cette partie est dans app.R.
+
+![a](C:/Users/mauvray/Downloads/r/projet_R/projet/images/modelineair1.png)
+
+![a](C:/Users/mauvray/Downloads/r/projet_R/projet/images/modelineair2.png)
 

@@ -3,13 +3,12 @@ title: "cartes.Rmd"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## Partie 4 : Cartographie
 
 Charger les dataframes et les fonctions présentes dans fonctions.R :
+
+
 
 ```{r}
 source("fonctions.R")
