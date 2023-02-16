@@ -1,0 +1,4 @@
+"0","taux_erreur = validation_croisee(train=train_test$train, "
+"0","                                 column_y=5, "
+"0","                                 n_fold_cv=5, n_fold=18, "
+"0","                                 k_min=k_min, k_max=k_max)"

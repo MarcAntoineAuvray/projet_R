@@ -1,0 +1,3 @@
+"0","df_train = read.table(""Synth_train.txt"", header = 1)"
+"0",""
+"0","df_train"

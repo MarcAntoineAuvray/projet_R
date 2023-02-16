@@ -1,0 +1,1 @@
+"0","curve(dnorm(x,mu.ne,sigma.ne/2),n=200,from=MIN, to=MAX,add=TRUE, col=""blue"")"

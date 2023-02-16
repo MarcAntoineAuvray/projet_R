@@ -1,0 +1,4 @@
+"0","# relancer le code du Rmarkown sur les cartes"
+"0","rmarkdown::render(input = ""cartes.Rmd"", "
+"0","                  output_file = sprintf(""cartes.html""), quiet = TRUE)"
+"0","HTML(as.character(read_html(""cartes.html"")))"

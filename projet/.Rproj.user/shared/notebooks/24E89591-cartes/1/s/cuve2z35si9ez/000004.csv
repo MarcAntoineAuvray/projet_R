@@ -1,0 +1,5 @@
+"0","source(""fonctions.R"")"
+"0",""
+"0","df = readRDS(""dataframe.rds"")"
+"0","df_pop = readRDS(""dataframe_pop.rds"")"
+"0","df_raffineries = load_rafineries()"

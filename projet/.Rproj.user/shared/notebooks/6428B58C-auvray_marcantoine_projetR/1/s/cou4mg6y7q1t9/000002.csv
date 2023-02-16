@@ -1,0 +1,4 @@
+"0","for (i in 1:nrow(df)) {"
+"0","  df[i, ""nombre_services""] = length(grep(TRUE, df[i, vecteur_uniques_services]))"
+"0","  "
+"0","}"

@@ -1,0 +1,1 @@
+"0","lines(x, p*dnorm(x, mean=mu, sd=sigma), col=""blue"", lwd=2)"

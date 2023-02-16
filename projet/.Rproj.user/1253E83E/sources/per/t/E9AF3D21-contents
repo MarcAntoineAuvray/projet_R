@@ -1,0 +1,457 @@
+---
+title: "auvray_marcantoine_projetR"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+AUVRAY
+Marc-Antoine
+
+# Projet - Explication du prix du gazole
+
+Ce projet a pour objectifs de :
+
+-Créer un data.frame à partir du fichier PrixCarburants_quotidien_20221215.xml et l’enrichir avec des données externes;
+
+-Essayer, à l’aide de méthodes statistiques et de visualisations pertinentes, d’expliquer le prix du gazole par les différentes variables à votre disposition.
+
+Je l'ai découpé en plusieurs parties, chacune représentées par un onglet de ce projet shiny :
+
+-Partie 1 : Présentation du projet, du code et des données;
+
+-Partie 2 : Analyse unidimensionnelle de chaque variable;
+
+-Partie 3 : Analyse bidimensionnelle;
+
+-Partie 4 : Cartographie;
+
+-Partie 5 : Régression linéaire
+
+## Partie 1 : Présentation du projet, du code et des données :
+
+### Code du fichier auvray_marcantoine_projet_R.Rmd :
+
+Ce script a pour objectif de créer le data.frame souhaité d'après les données du fichier XML et de le stocker dans un fichier dataframe.rds.
+
+Permet de charger le package XML qui sert à importer des données d'un fichier XML :
+
+```{r}
+# rm(list=ls())
+```
+
+Permet de charger le package XML qui sert à importer des données d'un fichier XML :
+
+```{r}
+library(XML)
+```
+
+Met dans l'objet string "chemin" le chemin actuel :
+
+```{r}
+chemin = getwd()
+chemin
+```
+
+Met dans l'objet "carburants" le contenu du fichier XML selon son chemin :
+
+```{r}
+carburants = xmlParse(paste0(chemin, "/", "PrixCarburants_quotidien_20221215.xml"))
+```
+
+Met dans l'objet "df" un dataframe initialisé vide avec 0 colonne et un nombre de lignes qui est celui du nombre de stations de gazole dans le XML :
+
+```{r}
+df = data.frame(matrix(nrow=dim(sapply(getNodeSet(carburants,
+                                                  "//pdv/prix[@nom='Gazole']/.."),
+                                       xmlAttrs))[2],
+                       ncol=0))
+
+head(df)
+
+str(df)
+```
+
+Rajoute dans "df" les colonnes "id" (identifiant de la station), "latitude", "longitude", "cp" (code postal de la station) et "pop" (si c'est une station de route ou d'autoroute) :
+
+```{r}
+df = sapply(c("id", "latitude", "longitude", "cp", "pop"),
+            function(str) {df[str] <- sapply(getNodeSet(carburants,
+                                                        "//pdv/prix[@nom='Gazole']/.."),
+                                             xmlGetAttr,
+                                             str)})
+
+head(df)
+
+str(df)
+```
+
+Rajoute dans df les colonnes "valeur" (le prix du gazole de la station) , "ville" (de la station) et "dep_num" (le numéro de département de la station).
+
+```{r}
+df = data.frame(cbind(df,
+                      valeur=sapply(getNodeSet(carburants,
+                                               "/pdv_liste/pdv/prix[@nom='Gazole']"),
+                                    xmlGetAttr, 
+                                    "valeur"),
+                      ville=sapply(getNodeSet(carburants, 
+                                              "//pdv[prix/@nom='Gazole']/ville"), 
+                                   xmlValue),
+                      dep_num = substr(df[,"cp"], 0, 2)))
+
+head(df)
+
+str(df)
+```
+
+Encode la colonne "ville" de "df" au format UTF-8 qui permet de gérer les accents :
+
+```{r}
+Encoding(df$ville) <- "UTF-8"
+```
+
+Met au format numérique les colonnes de latitude et longitude de "df" :
+
+```{r}
+df[, "latitude"] = as.numeric(df[, "latitude"])
+df[, "longitude"] = as.numeric(df[, "longitude"])
+```
+
+Renomme la colonne "valeur" en "prix" et la met au format numérique :
+
+```{r}
+colnames(df)[colnames(df) == "valeur"] = "prix"
+df[, "prix"] = as.numeric(df[, "prix"])
+```
+
+Renomme la colonne "pop" en "type_voie_1" :
+
+```{r}
+colnames(df)[colnames(df) == "pop"] <- "type_de_voie_1"
+```
+
+Dans la colonne "type_voie_1", renomme les "R" par "route", les "A" par "autoroute" :
+
+```{r}
+df$type_de_voie_1 <- ifelse(df$type_de_voie_1 == "R", 
+                            "route", 
+                            ifelse(df$type_de_voie_1 == "A", 
+                                   "autoroute", 
+                                   df$type_de_voie_1))
+table(df$type_de_voie_1)
+```
+
+Fonction qui prend arguments un dataframe nommé "df", un entier nommé "nombre_categorie" et un string "nom_colonne_catégorie" (par défaut "").
+
+Elle retourne le dataframe avec en plus une colonne des quantiles du prix de l'ordre mis dans "nombre_categories".
+
+(Exemple : avec en "nombre_categorie" 4 et pas de "nom_colonne_categories" renseigné, la fonction renvoie le dataframe avec une nouvelle colonne nommée "quantile_dordre_4" avec 4 valeurs possibles (1,2,3,4) chacune représentant le quartile dans lequel est le prix de la station respective.) :
+
+```{r}
+ajouter_colonnes_quantile <- function(df, nombre_categories, nom_colonne_categories="") {
+  if(nom_colonne_categories==""){
+    nom_colonne_categories = paste0("quantile_dordre_", as.character(nombre_categories))
+  }
+  df[[nom_colonne_categories]] = cut(df$prix, 
+                                     breaks=quantile(df$prix, 
+                                                     probs=seq(0, 1, 1/nombre_categories)), 
+                                     labels=1:nombre_categories, 
+                                     include.lowest=TRUE)
+  df[[nom_colonne_categories]] = as.numeric(df[[nom_colonne_categories]])
+  
+  return(df)
+}
+```
+
+Met dans "liste_quantiles", une liste de 2 éléments : "nombres" un vecteur avec 2,4,10 et "noms_colonne_categories" avec "mediane_numeros_categories","quartile_numeros_categories", "decile_numeros_categories".
+
+```{r}
+liste_quantiles = list(nombres = c(2,4,10),
+                       noms_colonne_categories = c("mediane_numeros_categories","quartile_numeros_categories", "decile_numeros_categories"))
+str(liste_quantiles)
+```
+
+Ajoute dans df 3 colonnes des quantiles des prix d'ordre 2 (médiane), d'ordre 4 (quartiles) et d'ordre 10 (déciles) :
+
+```{r}
+for (i in 1:length(liste_quantiles$nombres)) {
+  df = ajouter_colonnes_quantile(df=df,
+                                 nombre_categories=liste_quantiles$nombres[i],
+                                 nom_colonne_categories=liste_quantiles$noms_colonne_categories[i])
+  print(table(df[liste_quantiles$noms_colonne_categories[i]]))
+}
+
+str(df)
+```
+
+Fonction qui permet de charger les adresses du XML, en les encodant en UTF-8 et en les mettant en minuscule :
+
+```{r}
+charger_adresses<-function(){
+  adr = sapply(getNodeSet(carburants,"//pdv[prix/@nom='Gazole']/adresse"), xmlValue)
+  Encoding(adr) <- "UTF-8"
+  adr = tolower(adr)
+  return(adr)
+}
+
+head(charger_adresses())
+```
+
+Mets dans liste_remplacements une liste composée de listes :
+
+-liste "plusieurs_choix_avec_espace" : une liste de 2 listes : liste de strings "mot_remplacement" avec les mots (qui ont un espace) qui remplaceront les adresses qui possede au moins un des mots présents respectivement dans les vecteurs de la 2e liste "mots_a_remplacer";
+
+-liste "plusieurs_choix_sans_espace" : une liste de 2 listes : liste de strings "mot_remplacement" avec les mots (qui n ont pas d espace) qui remplaceront les adresses qui possede au moins un des mots présents respectivement dans les vecteurs de la 2e liste "mots_a_remplacer";
+
+-liste "un choix" : une liste de strings avec les mots (qui ont un espace) qui remplaceront les adresses qui possedent ce mot;
+
+-liste "regroupements" : une liste de 2 listes : liste de strings "mot_remplacement" avec les mots qui remplaceront les adresses qui possede au moins un des mots présents respectivement dans les vecteurs de la 2e liste "mots_a_remplacer";
+
+```{r}
+liste_remplacements = list("plusieurs_choix_avec_espace"=list("mot_remplacement"=list("zoneartisanale", 
+                                                                                      "centrecommercial",  
+                                                                                      "zoneindustrielle", "lieudit", 
+                                                                                      "rondpoint", "routenationale",
+                                                                                      "voiecommunale","zonecommerciale", 
+                                                                                      "zoneactivite"),
+                                                              "mots_a_remplacer"=list(c("zone artisanale"), 
+                                                                                      c("centre commercial","c. c.","c cial", "ctre commercial", "c.commercial"), 
+                                                                                      c("zone industrielle"), c("lieu dit", "lieu-dit"), 
+                                                                                      c("rond point", "rond-point"), c("route nationale", "rn"), 
+                                                                                      c("voie communale"),c("zone commerciale","z.c.", "zc"),  
+                                                                                      c("zone activité", "zone d'activités", "zone activite"))),
+                           
+                           "plusieurs_choix_sans_espace"=list("mot_remplacement"=list("za","centrecommercial", "zoneindustrielle", 
+                                                                                      "allee", "lieudit", 
+                                                                                      "rondpoint", "route", "chaussee", 
+                                                                                      "residence", "charriere", 
+                                                                                      "aeroport", "parc", "voie", 
+                                                                                      "avenue",  "routenationale", 
+                                                                                      "boulevard"),
+                                                              "mots_a_remplacer"=list(c("z.a", "za"), c("c.c", "c/c", "ccial"), c("zi", "z.i", "z.i."), 
+                                                                                      c("allee", "allées", "allée"), c("lieudit", "lieu-dit"),  
+                                                                                      c("rondpoint", "rond-point"), c("rte", "route"), c("chaussée", "chaussee"), 
+                                                                                      c("residence", "résidence"),  c("charrière", "charriere"), 
+                                                                                      c("aéroport", "aeroport"), c("parcs", "parc"), c("voie"), 
+                                                                                      c("av.", "av", "ave", "avenue","av.de"), c("rn"), 
+                                                                                      c("boulevard", "bld", "bvd", "bd", "bd.du", "bld."))),
+                           
+                           "un_choix"=list("faubourg", "chemin", "lotissement", "quartier", "autoroute", "rue", "aire", "cours", 
+                                           "pont", "place", "impasse", "promenade",  "hameau", "carrefour", "station", "zac","village", 
+                                           "domaine", "passage", "plaine", "quai", "plan", "gare", "relais"),
+                           
+                           "regroupements"=list("mot_remplacement"=list("route",
+                                                                        "routenationale_autoroute",
+                                                                        "avenue",
+                                                                        "boulevard",
+                                                                        "rue",
+                                                                        "allee_chemin_voie_impasse_carrefour_chaussee_passage_voie_communale",
+                                                                        "cours_faubourg_lieudit_village_hameau_promenade_domaine_charriere_plain_plan",
+                                                                        "quartier_place_aire_parc_pont_quai_residence_gare_lotissement_rondpoint",
+                                                                        "centre_commercial_za_zone_industrielle_zone_commerciale_zone_activite_zac_station_zone_artisanale_relais_aeroport"),
+                                                
+                                                "mots_a_remplacer"=list(c("route"), 
+                                                                        c("routenationale","autoroute"),
+                                                                        c("avenue"), 
+                                                                        c("boulevard"), 
+                                                                        c("rue"),
+                                                                        c("allee","chemin","voie","impasse", "carrefour", "chaussee", "passage", "voiecommunale"),
+                                                                        c("cours","faubourg","lieudit","village", "hameau","promenade", "domaine","charriere","plaine","plan"),
+                                                                        c("quartier","place","aire","parc","pont","quai", "residence", "gare", "lotissement", "rondpoint"),
+                                                                        c("centrecommercial","za","zoneindustrielle","zonecommerciale", "zoneactivite", "zac", 
+                                                                          "station", "zoneartisanale","relais", "aeroport"))))
+```
+
+La fonction prend en arguments un vecteur "vecteur_adresses" et une liste "liste_remplacements". Elle retourne une liste de 2 vecteurs. Le premier "type_voie_2_precis" represente le type de voie précis de la station et devient "autre" s il est peu présent dans les données. Le deuxième représente des regroupements des types proches :
+
+```{r}
+vecteurs_types_voie<-function(vecteur_adresses, liste_remplacements){
+  
+  for(adresse_i in seq_along(vecteur_adresses)){
+    
+    for (vecteur_i in seq_along(liste_remplacements$plusieurs_choix_sans_espace$mots_a_remplacer)) {
+      if(grepl(paste(liste_remplacements$plusieurs_choix_sans_espace$mots_a_remplacer[[vecteur_i]], collapse="|"), vecteur_adresses[adresse_i][[1]])){
+        vecteur_adresses[adresse_i] = liste_remplacements$plusieurs_choix_sans_espace$mot_remplacement[[vecteur_i]]
+      }
+    }
+    
+    for (vecteur_i in seq_along(liste_remplacements$plusieurs_choix_avec_espace$mots_a_remplacer)) {
+      if(any(strsplit(vecteur_adresses[adresse_i], " ")[[1]] %in% liste_remplacements$plusieurs_choix_avec_espace$mots_a_remplacer[[vecteur_i]])){
+        vecteur_adresses[adresse_i] = liste_remplacements$plusieurs_choix_avec_espace$mot_remplacement[[vecteur_i]]
+      }
+    }
+    
+    for (mot_i in seq_along(liste_remplacements$un_choix)) {
+      if(grepl(liste_remplacements$un_choix[[mot_i]], vecteur_adresses[adresse_i]))  
+      {
+        vecteur_adresses[adresse_i] = liste_remplacements$un_choix[[mot_i]]
+      }
+    }
+    
+  }
+  remplacements = union(unlist(liste_remplacements$plusieurs_choix_sans_espace$mot_remplacement),
+                        union(unlist(liste_remplacements$plusieurs_choix_avec_espace$mot_remplacement),
+                              unlist(liste_remplacements$un_choix)))
+  
+  type_voie_2_precis = ifelse(vecteur_adresses %in% remplacements, vecteur_adresses, "autre")
+  
+  type_voie_2_cat = type_voie_2_precis
+  for(adresse_i in seq_along(type_voie_2_cat)){
+    for (vecteur_i in seq_along(liste_remplacements$regroupements$mots_a_remplacer)) {
+      if(any(strsplit(type_voie_2_cat[adresse_i], " ")[[1]] %in% liste_remplacements$regroupements$mots_a_remplacer[[vecteur_i]])){
+        type_voie_2_cat[adresse_i] = liste_remplacements$regroupements$mot_remplacement[[vecteur_i]]
+      }
+    }
+  }
+  
+  return(list("type_voie_2_precis"=type_voie_2_precis,
+              "type_voie_2_cat"=type_voie_2_cat))
+}
+```
+
+Met dans "types_voies" la sortie de cette fontion avec nos données et des adresses issues de la fonction "charger_adresses" :
+
+```{r}
+types_voies = vecteurs_types_voie(vecteur_adresses=charger_adresses(), liste_remplacements=liste_remplacements)
+
+table(types_voies$type_voie_2_precis)
+
+table(types_voies$type_voie_2_cat)
+```
+
+Mets 2 colonnes de "df" ces 2 vecteurs :
+
+```{r}
+df = cbind(df, type_voie_2_precis=types_voies$type_voie_2_precis) 
+df = cbind(df, type_voie_2_cat=types_voies$type_voie_2_cat)
+```
+
+Récupère les services de chaque station et les mets dans le vecteur "vecteur_services" :
+
+```{r}
+vecteur_services = sapply(getNodeSet(carburants, "//pdv/services/service"), xmlValue)
+
+head(vecteur_services)
+```
+
+Encode ce vecteur pour qu'il gère les accents :
+
+```{r}
+Encoding(vecteur_services) <- "UTF-8"
+```
+
+Met dans le vecteur "vecteur_uniques_services" les valeurs uniques du vecteur "vecteur_services" :
+
+```{r}
+vecteur_uniques_services = unique(vecteur_services)
+
+vecteur_uniques_services
+```
+
+Met dans "df" autant de nouvelles colonnes qu'il y a de service différent, elles sont initialisées avec NA :
+
+```{r}
+df = cbind(df, 
+           setNames(matrix(nrow=nrow(df), 
+                           ncol=length(vecteur_uniques_services),
+                           dimnames=list(NULL, 
+                                         vecteur_uniques_services)), 
+                    0))
+
+str(df)
+```
+
+Met dans une liste de listes "liste_services_by_station" chaque liste de services que propose une station :
+
+```{r}
+liste_services_by_station = lapply(getNodeSet(carburants, "//pdv"), 
+                                   function(pdv) {
+                                     lapply(getNodeSet(pdv, "./services/service"), xmlValue)
+})
+
+head(liste_services_by_station[1])
+```
+
+Sur chaque ligne entière i de "df", met dans le vecteur "services_station" la liste des services que propose la i ème station, puis pour chaque numero j de string dans  "vecteur_uniques_services", si la i ème station propose le j ème service, alors elle prend le booléen TRUE dans la colonne respective, sinon FALSE :
+
+```{r}
+for (i in 1:nrow(df)) {
+  services_station = liste_services_by_station[[i]]
+  for (j in 1:length(vecteur_uniques_services)) {
+    if (vecteur_uniques_services[j] %in% services_station) {
+      df[i, vecteur_uniques_services[j]] = TRUE
+    }
+    else{
+      df[i, vecteur_uniques_services[j]] = FALSE
+    }
+  }
+}
+```
+
+Met dans une colonne "nombre_services" de "df", le nombre de services que propose chaque station :
+
+```{r}
+for (i in 1:nrow(df)) {
+  df[i, "nombre_services"] = length(grep(TRUE, df[i, vecteur_uniques_services]))
+  
+}
+```
+
+Enregistre le dataframe "df" dans le fichier "dataframe.rds" :
+
+```{r}
+saveRDS(df, "dataframe.rds")
+```
+
+Ici les fonctions présentes dans le fichier fonctions.R
+
+```{r}
+source("fonctions.R")
+
+# pour récuperer les colonnes d'un dataframe et les trier en fonction du type
+print("tri_colonnes_noms : ")
+tri_colonnes_noms
+
+print("load_pop_municip : ")
+load_pop_municip
+
+print("add_pop : ")
+add_pop
+
+print("load_rafineries : ")
+load_rafineries
+```
+
+# Partie 2 : Analyse unidimensionnelle de chaque variable;
+
+# Partie 3 : Analyse bidimensionnelle;
+
+# Partie 4 : Cartographie;
+
+```{r}
+# relancer le code du Rmarkown sur les cartes
+rmarkdown::render(input = "cartes.Rmd", 
+                  output_file = sprintf("cartes.html"), quiet = TRUE)
+HTML(as.character(read_html("cartes.html")))
+```
+
+
+# Partie 5 : Régression linéaire
+
+```{r}
+# pour séparer un jeu de données
+print("split_ : ")
+split_
+
+# pour fitter un modele lineaire sur des données
+print("modele_lineaire : ")
+modele_lineaire
+
+# pour afficher la comparaison entre données 
+print("table_prediction : ")
+table_prediction
+```
+

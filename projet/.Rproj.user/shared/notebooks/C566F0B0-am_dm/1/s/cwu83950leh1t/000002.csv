@@ -1,0 +1,1 @@
+"0","sales10 = sales[sample(1:nrow(sales), round(nrow(sales)/10)), ]"

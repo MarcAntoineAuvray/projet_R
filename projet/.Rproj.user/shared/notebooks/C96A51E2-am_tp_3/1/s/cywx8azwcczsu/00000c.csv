@@ -1,0 +1,2 @@
+"0","x = seq(range(sample)[1], range(sample)[2], length=200)"
+"0","lines(x,p*dnorm(x,mean=mu,sd=sigma)+(1-p)*dnorm(x,mean=mmu,sd=ssigma),lwd=2)"

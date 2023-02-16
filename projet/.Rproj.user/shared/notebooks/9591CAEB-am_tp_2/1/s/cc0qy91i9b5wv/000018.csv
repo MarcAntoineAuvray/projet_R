@@ -1,0 +1,4 @@
+"0","plot(hist.ne, "
+"0","     add=TRUE, "
+"0","     col=rgb(0,1,0,alpha=0.3),"
+"0","     xlim=c(0.9*MIN,1.1*MAX), ylim=c(0,0.005), freq=FALSE, main=title, xlab=""niveau d expression"", ylab=""densite"")"

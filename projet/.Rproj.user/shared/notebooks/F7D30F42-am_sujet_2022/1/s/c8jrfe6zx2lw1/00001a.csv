@@ -1,0 +1,7 @@
+"0",""
+"0","tx_erreur_test_2 = sum(predictions_test_2 != df_test[, n_c_y])/nrow(df_test)"
+"0","tx_erreur_test_2"
+"1","[1]"
+"1"," 0.05"
+"1","
+"

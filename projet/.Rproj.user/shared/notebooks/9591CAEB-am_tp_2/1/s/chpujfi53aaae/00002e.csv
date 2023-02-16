@@ -1,0 +1,1 @@
+"0","plot(u,qnorm(u,0,1) ,type=""l"", main = ""3"")"

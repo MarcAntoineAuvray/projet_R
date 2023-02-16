@@ -1,0 +1,3 @@
+"0","barplot(table(sales$ID), "
+"0","        main=""Nombre de rapports selon l ID de vendeur"","
+"0","        xlab=""ID"", ylab=""nombre de rapports"")"

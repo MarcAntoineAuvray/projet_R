@@ -1,0 +1,2 @@
+"0","hist.e=hist(spots.e,nclass=30, plot=FALSE)"
+"0","hist.ne=hist(spots.ne,nclass=30,plot=FALSE)"

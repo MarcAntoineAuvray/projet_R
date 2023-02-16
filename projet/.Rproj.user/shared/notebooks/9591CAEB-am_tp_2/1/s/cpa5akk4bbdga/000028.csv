@@ -1,0 +1,2 @@
+"0","# ajouter un nuage de points"
+"0","points(x+.1,y+.1, pch=2)"

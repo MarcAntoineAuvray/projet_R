@@ -1,0 +1,4 @@
+"0","z=seq(min(x),max(x),0.01)"
+"0","#superpose densit\’e th\’eorique"
+"0","lines(z,dnorm(z,0,1),lty=2)"
+"0",""

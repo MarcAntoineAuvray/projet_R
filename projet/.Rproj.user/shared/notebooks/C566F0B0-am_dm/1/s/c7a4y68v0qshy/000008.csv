@@ -1,0 +1,2 @@
+"0","X = df[, unlist(types_colonnes(df=df)[""colonnes_numeriques""])]"
+"0","head(X)"

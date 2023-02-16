@@ -1,0 +1,1 @@
+"0","pred_knn = prediction_knn(train=sales1, test=sales2, column_y=5, k=3)"

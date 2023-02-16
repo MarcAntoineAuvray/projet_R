@@ -1,0 +1,2 @@
+"0","title=""distribution desgenes exprimes ou non exprimes"""
+"0","curve(dnorm(x,mu.e,sigma.e/2),n=200,from=MIN, to=MAX, col=""red"", main=title, ylab=""densite"",xlab=""niveau d expression"")"

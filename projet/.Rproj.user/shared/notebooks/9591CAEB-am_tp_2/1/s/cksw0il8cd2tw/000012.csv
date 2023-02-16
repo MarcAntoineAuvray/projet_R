@@ -1,0 +1,4 @@
+"0","par(mfrow=c(1,2))"
+"0","x=rnorm(10000)"
+"0","y=density(x)"
+"0","plot(y)"

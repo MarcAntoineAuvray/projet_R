@@ -1,0 +1,76 @@
+---
+title: "cartes.Rmd"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Partie 4 : Cartographie
+
+Charger les dataframes et les fonctions présentes dans fonctions.R :
+
+```{r}
+source("fonctions.R")
+
+df = readRDS("dataframe.rds")
+df_pop = readRDS("dataframe_pop.rds")
+df_raffineries = load_rafineries()
+```
+
+Carte des stations selon le prix de leur gazole (de manière continue) :
+
+```{r}
+ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, 
+                      color=df$prix))+geom_point()+
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())+
+  theme_void()+
+  scale_color_gradient(low = "blue", high = "red")
+```
+
+Carte des stations selon le prix de leur gazole (en 2 parties égales) :
+
+```{r}
+ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, 
+                      color=df$mediane_numeros_categories))+geom_point()+
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())+
+  theme_void()+
+  scale_color_gradient(low = "blue", high = "red")
+```
+
+Carte des stations selon le prix de leur gazole (en 4 parties égales) :
+
+```{r}
+ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, 
+                      color=df$quartile_numeros_categories))+geom_point()+
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())+
+  theme_void()+
+  scale_color_gradient(low = "blue", high = "red")
+```
+
+Carte des stations selon le prix de leur gazole (en 10 parties égales) :
+
+```{r}
+ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, 
+                      color=df$decile_numeros_categories))+geom_point()+
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())+
+  theme_void()+
+  scale_color_gradient(low = "blue", high = "red")
+```
+
+Carte des stations selon le prix de leur gazole (en 10 parties égales), avec raffinerie la plus proches :
+
+```{r}
+ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, color=df$prix)) + 
+  geom_point() +
+  scale_color_gradient(low="blue", high="red") +
+  geom_point(data=df_raffineries, aes_string(x=df_raffineries$longitude, y=df_raffineries$latitude), color="black") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme_void()
+```
+

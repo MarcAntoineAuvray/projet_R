@@ -1,0 +1,4 @@
+"0","title=""Distribution des spots exprimes et non exprimes"""
+"0","plot(hist.e, "
+"0","     col=rgb(0,0,1,alpha=0.3),"
+"0","     xlim=c(0.9*MIN,1.1*MAX), ylim=c(0,0.005),freq=FALSE, main=title, xlab=""niveau d expression"", ylab=""densite"")"

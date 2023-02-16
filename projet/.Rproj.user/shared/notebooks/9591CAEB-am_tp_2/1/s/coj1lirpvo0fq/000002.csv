@@ -1,0 +1,5 @@
+"0","n=1000"
+"0","spots.e=rnorm(n,mu.e,sigma.e)"
+"0","spots.ne=rnorm(n,mu.ne,sigma.ne)"
+"0","MIN=min(spots.e,spots.ne)"
+"0","MAX=max(spots.e,spots.ne)"

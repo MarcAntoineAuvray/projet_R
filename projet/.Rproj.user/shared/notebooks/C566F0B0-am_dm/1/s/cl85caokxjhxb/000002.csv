@@ -1,0 +1,4 @@
+"0","table_prediction = table_prediction_knn(train=train_test$train, "
+"0","                                        test=train_test$test, "
+"0","                                        column_y=5, "
+"0","                                        k=3)"

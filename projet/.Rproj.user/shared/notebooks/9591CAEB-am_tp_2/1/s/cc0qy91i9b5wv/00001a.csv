@@ -1,0 +1,1 @@
+"0","curve(dnorm(x,mu.e,sigma.e),from=MIN, to=MAX,add=TRUE, col=rgb(0,0,1))"

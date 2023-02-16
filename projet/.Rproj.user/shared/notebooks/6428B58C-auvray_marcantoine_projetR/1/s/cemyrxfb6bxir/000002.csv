@@ -1,0 +1,71 @@
+"0","# pour séparer un jeu de données"
+"0","print(""split_ : "")"
+"1","[1]"
+"1"," ""split_ : """
+"1","
+"
+"0","split_"
+"1","function(df, nombre_tests){
+"
+"1","  suppressMessages(df_test <- df %>% sample_n(nombre_tests))
+"
+"1","  suppressMessages(df_train <- df %>% anti_join(df_test))
+"
+"1","  
+"
+"1","  return(list(""df_train""=df_train,
+"
+"1","              ""df_test""=df_test))
+"
+"1","}
+"
+"0","# pour fitter un modele lineaire sur des données"
+"0","print(""modele_lineaire : "")"
+"1","[1]"
+"1"," ""modele_lineaire : """
+"1","
+"
+"0","modele_lineaire"
+"1","function(df_train, prix=prix) {
+"
+"1","  modele_fit <- train(prix ~ ., data=df_train, method=""lm"")
+"
+"1","  return(modele_fit)
+"
+"1","}
+"
+"0","# pour afficher la comparaison entre données "
+"0","print(""table_prediction : "")"
+"1","[1]"
+"1"," ""table_prediction : """
+"1","
+"
+"0","table_prediction"
+"1","function(df, nombre_tests, prix=prix, nom_model){
+"
+"1","  liste_train_test = split_(df=df, nombre_tests=nombre_tests)
+"
+"1","  
+"
+"1","  df_train = liste_train_test$df_train
+"
+"1","  df_test = liste_train_test$df_test
+"
+"1","  
+"
+"1","  if (nom_model==""modele_lineaire"") {
+"
+"1","    modele_fit = modele_lineaire(df=df_train, prix=prix)
+"
+"1","  }
+"
+"1","  colnames(df_test)[colnames(df_test) == as.character(substitute(prix))] <- ""y_observÃ©s""
+"
+"1","  tablo =  data.frame(""observations_y""=df_test$""y_observÃ©s"",
+"
+"1","                      ""predictions_y""=predict(modele_fit, df_test))
+"
+"1","  return(tablo)
+"
+"1","}
+"

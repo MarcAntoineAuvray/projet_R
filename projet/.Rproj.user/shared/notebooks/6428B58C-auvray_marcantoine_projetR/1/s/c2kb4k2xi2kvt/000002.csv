@@ -1,0 +1,2 @@
+"0","colnames(df)[colnames(df) == ""valeur""] = ""prix"""
+"0","df[, ""prix""] = as.numeric(df[, ""prix""])"

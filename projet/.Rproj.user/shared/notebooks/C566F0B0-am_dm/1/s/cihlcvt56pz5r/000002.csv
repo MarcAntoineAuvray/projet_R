@@ -1,0 +1,1 @@
+"0","sales2 = factor_to_numeric(sales[sales$Insp==""unkn"",])"

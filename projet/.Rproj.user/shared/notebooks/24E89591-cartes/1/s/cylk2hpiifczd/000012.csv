@@ -1,0 +1,8 @@
+"0","df_raffineries = load_rafineries()"
+"0",""
+"0","ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, color=df$prix)) + "
+"0","  geom_point() +"
+"0","  scale_color_gradient(low=""blue"", high=""red"") +"
+"0","  geom_point(data=df_raffineries, aes_string(x=df_raffineries$longitude, y=df_raffineries$latitude), color=""black"") +"
+"0","  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +"
+"0","  theme_void()"

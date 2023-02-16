@@ -1,0 +1,2 @@
+"0","L = read.table(""Data_Nortel_2G.txt"", header=TRUE)"
+"0","L"

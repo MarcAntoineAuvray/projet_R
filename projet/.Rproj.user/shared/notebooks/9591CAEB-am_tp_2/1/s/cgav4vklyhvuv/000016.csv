@@ -1,0 +1,2 @@
+"0",""
+"0","hist(x, freq=FALSE, nclass=length(unique(x))+1)"

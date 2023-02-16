@@ -1,0 +1,2 @@
+"0","df[, ""latitude""] = as.numeric(df[, ""latitude""])"
+"0","df[, ""longitude""] = as.numeric(df[, ""longitude""])"

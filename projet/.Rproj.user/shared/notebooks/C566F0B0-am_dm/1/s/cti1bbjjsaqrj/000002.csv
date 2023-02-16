@@ -1,0 +1,1 @@
+"0","BP.uprice = tapply(Uprice, Prod, function(x) boxplot.stats(x)$stats)"

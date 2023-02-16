@@ -1,0 +1,256 @@
+"0","source(""fonctions.R"")"
+"0",""
+"0","print(""tri_colonnes_noms"")"
+"1","[1]"
+"1"," ""tri_colonnes_noms"""
+"1","
+"
+"0","tri_colonnes_noms"
+"1","function(df, n_levels=50){
+"
+"1","  booleen = c()
+"
+"1","  numerique_continu = c()
+"
+"1","  numerique_discret = c()
+"
+"1","  caractere_continu = c()
+"
+"1","  caractere_discret = c()
+"
+"1","  
+"
+"1","  for (nom_colonne in colnames(df)) {
+"
+"1","    colonne = df[, nom_colonne]
+"
+"1","    if (is.logical(colonne)) {
+"
+"1","      booleen = c(booleen, nom_colonne)
+"
+"1","    }
+"
+"1","    
+"
+"1","    if (is.character(colonne)) {
+"
+"1","      if (length(unique(colonne))<n_levels){
+"
+"1","        caractere_discret = c(caractere_discret, nom_colonne)
+"
+"1","      } else{
+"
+"1","        caractere_continu = c(caractere_continu, nom_colonne)
+"
+"1","      }
+"
+"1","    }
+"
+"1","    
+"
+"1","    if (is.numeric(colonne)) {
+"
+"1","      if (length(unique(colonne))<n_levels){
+"
+"1","        numerique_discret = c(numerique_discret, nom_colonne)
+"
+"1","      } else{
+"
+"1","        numerique_continu = c(numerique_continu, nom_colonne)
+"
+"1","      }
+"
+"1","    }
+"
+"1","  }
+"
+"1","  
+"
+"1","  liste = list(""booleen""=booleen,
+"
+"1","               ""numerique_continu""=numerique_continu,
+"
+"1","               ""numerique_discret""=numerique_discret,
+"
+"1","               ""caractere_continu""=caractere_continu,
+"
+"1","               ""caractere_discret""=caractere_discret)
+"
+"1","  return(liste)
+"
+"1","}
+"
+"0","print(""split_"")"
+"1","[1]"
+"1"," ""split_"""
+"1","
+"
+"0","split_"
+"1","function(df, nombre_tests){
+"
+"1","  suppressMessages(df_test <- df %>% sample_n(nombre_tests))
+"
+"1","  suppressMessages(df_train <- df %>% anti_join(df_test))
+"
+"1","  
+"
+"1","  return(list(""df_train""=df_train,
+"
+"1","              ""df_test""=df_test))
+"
+"1","}
+"
+"0","print(""modele_lineaire"")"
+"1","[1]"
+"1"," ""modele_lineaire"""
+"1","
+"
+"0","modele_lineaire"
+"1","function(df_train, prix=prix) {
+"
+"1","  modele_fit <- train(prix ~ ., data=df_train, method=""lm"")
+"
+"1","  return(modele_fit)
+"
+"1","}
+"
+"0","print(""table_prediction"")"
+"1","[1]"
+"1"," ""table_prediction"""
+"1","
+"
+"0","table_prediction"
+"1","function(df, nombre_tests, prix=prix, nom_model){
+"
+"1","  liste_train_test = split_(df=df, nombre_tests=nombre_tests)
+"
+"1","  
+"
+"1","  df_train = liste_train_test$df_train
+"
+"1","  df_test = liste_train_test$df_test
+"
+"1","  
+"
+"1","  if (nom_model==""modele_lineaire"") {
+"
+"1","    modele_fit = modele_lineaire(df=df_train, prix=prix)
+"
+"1","  }
+"
+"1","  colnames(df_test)[colnames(df_test) == as.character(substitute(prix))] <- ""y_observÃ©s""
+"
+"1","  tablo =  data.frame(""observations_y""=df_test$""y_observÃ©s"",
+"
+"1","                      ""predictions_y""=predict(modele_fit, df_test))
+"
+"1","  return(tablo)
+"
+"1","}
+"
+"0","print(""load_pop_municip"")"
+"1","[1]"
+"1"," ""load_pop_municip"""
+"1","
+"
+"0","load_pop_municip"
+"1","function(file=""insee_rp_hist_1968.xlsx"", file_codes=""laposte_hexasmal.csv""){
+"
+"1","  library(""readxl"")
+"
+"1","  pop_municip = data.frame(read_excel(""insee_rp_hist_1968.xlsx"", skip=4))
+"
+"1","  colnames(pop_municip) = c(""codgeo"", ""nom_ville"",""annee"", ""nombre_habitants"") # ""codgeo"" ""libgeo"" ""an""     ""p_pop"" 
+"
+"1","  pop_municip$annee = as.numeric(pop_municip$annee)
+"
+"1","  pop_municip$nombre_habitants = as.numeric(pop_municip$nombre_habitants)
+"
+"1","  Encoding(pop_municip$nom_ville) <- ""UTF-8""
+"
+"1","  
+"
+"1","  codes_cp_commun = read.csv(file_codes, sep="";"")[, c(""Code_commune_INSEE"", ""Code_postal"")]
+"
+"1","  colnames(codes_cp_commun) = c(""codgeo"", ""cp"")
+"
+"1","  
+"
+"1","  pop_municip = merge(pop_municip, codes_cp_commun)
+"
+"1","  
+"
+"1","  df_max_year <- aggregate(pop_municip$annee, by=list(pop_municip$cp), max)
+"
+"1","  colnames(df_max_year) = c(""cp"", ""annee"")
+"
+"1","  df_merged <- merge(pop_municip, df_max_year)
+"
+"1","  
+"
+"1","  pop_municip = aggregate(pop_municip$nombre_habitants, by=list(pop_municip$cp), max )
+"
+"1","  colnames(pop_municip) = c(""cp"", ""nombre_habitants"")
+"
+"1","  return(pop_municip)
+"
+"1","}
+"
+"0","print(""add_pop"")"
+"1","[1]"
+"1"," ""add_pop"""
+"1","
+"
+"0","add_pop"
+"1","function(df, file=""insee_rp_hist_1968.xlsx"", file_codes=""laposte_hexasmal.csv""){
+"
+"1","  df_pop_municip = load_pop_municip(file=""insee_rp_hist_1968.xlsx"", file_codes=""laposte_hexasmal.csv"")[, c(""cp"",""nombre_habitants"")]
+"
+"1","  
+"
+"1","  merge_ = merge(df, df_pop_municip, all.x = TRUE)
+"
+"1","  
+"
+"1","  return(merge_)
+"
+"1","}
+"
+"0","print(""load_rafineries"")"
+"1","[1]"
+"1"," ""load_rafineries"""
+"1","
+"
+"0","load_rafineries"
+"1","function(){
+"
+"1","  nom = c(""Raffinerie de Normandie"" ,
+"
+"1","           ""Raffinerie de Donges"",
+"
+"1","           ""Raffinerie de Port-JÃ©rÃ´me-Gravenchon"",
+"
+"1","           ""Raffinerie de LavÃ©ra"",
+"
+"1","           ""Plateforme de la MÃ¨de "",
+"
+"1","           ""Raffinerie de Feyzin"",
+"
+"1","           ""Raffinerie de Fos"",
+"
+"1","           ""Raffinerie de Grandpuits"")
+"
+"1","  
+"
+"1","  latitude = c(49.4752211,47.3135413,49.4752211,43.4074,43.39819,45.6657132,43.45065,48.5922882)
+"
+"1","  longitude = c(0.5528246,-2.0651766,0.5528246,5.0553,5.11637,4.8409521,4.9239384,2.9486286)
+"
+"1","  
+"
+"1","  df_raffineries = data.frame(nom ,latitude,longitude)
+"
+"1","  return(df_raffineries)
+"
+"1","}
+"

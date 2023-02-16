@@ -1,0 +1,6 @@
+"0","df = data.frame(matrix(nrow=dim(sapply(getNodeSet(carburants,"
+"0","                                                  ""//pdv/prix[@nom='Gazole']/..""),"
+"0","                                       xmlAttrs))[2],"
+"0","                       ncol=0))"
+"0",""
+"0","head(df)"

@@ -1,0 +1,3 @@
+"0","library(""FactoMineR"")"
+"0","# permet d utiliser get_eigenvalue :"
+"0","library(""factoextra"")"

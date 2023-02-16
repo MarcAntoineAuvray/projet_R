@@ -1,0 +1,2 @@
+"0","# Tvalue = A/sdbeta"
+"0","# Pvalue = 2*(1-pt(abs(Tvalue, df=n-p-1)))"

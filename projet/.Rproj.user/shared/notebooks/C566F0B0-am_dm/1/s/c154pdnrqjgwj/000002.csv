@@ -1,0 +1,7 @@
+"0","paste(deparse(substitute(sales)), "
+"0","      ""est un dataframe :"", "
+"0","      is.data.frame(sales))"
+"1","[1]"
+"1"," ""sales est un dataframe : TRUE"""
+"1","
+"

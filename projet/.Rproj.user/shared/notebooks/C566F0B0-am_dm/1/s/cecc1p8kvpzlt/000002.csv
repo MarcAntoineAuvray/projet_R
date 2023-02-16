@@ -1,0 +1,3 @@
+"0","rm(list=ls())"
+"0","# faire un knit pdf"
+"0","library(""tinytex"")"

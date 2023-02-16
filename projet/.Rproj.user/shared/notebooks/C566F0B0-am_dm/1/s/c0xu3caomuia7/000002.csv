@@ -1,0 +1,7 @@
+"0","paste(deparse(substitute(titanic_train)), "
+"0","      ""est un dataframe :"", "
+"0","      is.data.frame(titanic_train)) "
+"1","[1]"
+"1"," ""titanic_train est un dataframe : TRUE"""
+"1","
+"

@@ -1,0 +1,6 @@
+"0","f=function(x){"
+"0","  alpha=x[1]"
+"0","  beta=x[2]"
+"0","  sum((yi-alpha-beta*xi)^2)"
+"0","}"
+"0",""

@@ -1,0 +1,8 @@
+"0","verifier_dataframe<-function(df){"
+"0","  # si df n est pas un dataframe"
+"0","  if (!is.data.frame(df)) {"
+"0","    # alors df est remplace par df converti en dataframe"
+"0","    df = data.frame(df)"
+"0","  }"
+"0","  return(df)"
+"0","}"

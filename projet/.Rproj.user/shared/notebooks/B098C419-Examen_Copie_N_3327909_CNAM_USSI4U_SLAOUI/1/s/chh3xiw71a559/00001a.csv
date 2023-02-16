@@ -1,0 +1,7 @@
+"0","df_test = read.table(""synth_test.txt"", header = 1)"
+"0",""
+"0","# modele avec jeu de test seulement :"
+"0","predictions_test = fonction_knn(train_x1=df_test$x1, train_x2=df_test$x2, train_y=df_test$y,"
+"0","                                test_x1=df_test$x1, test_x2=df_test$x2,"
+"0","                                k=30, "
+"0","                                prob=FALSE)"

@@ -1,0 +1,6 @@
+"0",""
+"0","# On affiche, finalement la densite de f et on obtient la figure suivante :"
+"0","# Nous desirons a present trouver des estimateurs de m et a en utilisant la methode des moments."
+"0","# L’esperance du melange de lois gaussienne est am  (1  a)m et son moment d’ordre 2 est a(m2  1) + (1 a)(m2 1) = m2 + 1, ceci correspond au moment d’ordre 2 de la premiere loi gaussienne multiplie par a, additionne avec le moment d’ordre 2 de la seconde loi gaussienne multiplie par 1  a. "
+"0","# Or un estimateur de l’esperance d’un loi normale est X¯n = 1 n Pn i=1 Xi et un estimateur du moment d’ordre 2 est 1 n Pn i=1 X2 i . "
+"0","# On obtient donc le systeme a deux equations suivant : 8 ()¯"

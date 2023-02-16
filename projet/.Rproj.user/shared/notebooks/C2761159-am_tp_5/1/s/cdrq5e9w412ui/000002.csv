@@ -1,0 +1,6 @@
+"0","sigmaeps2 = sqrt(sum(model$res^2)/(n-p-1))"
+"0","sigmaeps2"
+"1","[1]"
+"1"," 46.56891"
+"1","
+"

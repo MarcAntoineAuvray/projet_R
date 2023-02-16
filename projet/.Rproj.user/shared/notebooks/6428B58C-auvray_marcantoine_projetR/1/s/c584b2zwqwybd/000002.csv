@@ -1,0 +1,2 @@
+"0","df = cbind(df, type_voie_2_precis=types_voies$type_voie_2_precis) "
+"0","df = cbind(df, type_voie_2_cat=types_voies$type_voie_2_cat)"

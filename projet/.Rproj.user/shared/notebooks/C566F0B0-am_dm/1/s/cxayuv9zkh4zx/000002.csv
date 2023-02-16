@@ -1,0 +1,8 @@
+"0","split_function<-function(df, index_train, index_test){"
+"0","  # dans un dataframe train on met les donnees df situees aux index index_train "
+"0","  train = df[index_train, 1:ncol(df)]"
+"0","  # dans un dataframe test on met les donnees df situees aux index index_test "
+"0","  test = df[index_test, 1:ncol(df)]"
+"0","  # on retourne une liste de ces 2 dataframes avec des noms de clef eponymes"
+"0","  return(list(""train""=train, ""test""=test))"
+"0","}"

@@ -1,0 +1,4 @@
+"0","x=rnorm(20)"
+"0","y=rexp(20)"
+"0","# nuage de points"
+"0","plot(x,y)"

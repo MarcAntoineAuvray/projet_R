@@ -1,0 +1,7 @@
+"0","paste(deparse(substitute(iris)), "
+"0","      ""est un dataframe :"", "
+"0","      is.data.frame(iris))"
+"1","[1]"
+"1"," ""iris est un dataframe : TRUE"""
+"1","
+"

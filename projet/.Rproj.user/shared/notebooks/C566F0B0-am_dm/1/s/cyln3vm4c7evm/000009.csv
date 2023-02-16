@@ -1,0 +1,3 @@
+"0","boxplot(sales$Uprice, "
+"0","        main=""Boxplot de Uprice (prix unitaire de chaque produit)"","
+"0","        ylab=""prix"")"

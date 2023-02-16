@@ -1,0 +1,5 @@
+"0","ggplot(df, aes_string(x=df$longitude/100000, y=df$latitude/100000, color=df$quartile_numeros_categories))+geom_point()+"
+"0","  theme(panel.grid.major = element_blank(), "
+"0","        panel.grid.minor = element_blank())+"
+"0","  theme_void()+"
+"0","  scale_color_gradient(low = ""blue"", high = ""red"")"

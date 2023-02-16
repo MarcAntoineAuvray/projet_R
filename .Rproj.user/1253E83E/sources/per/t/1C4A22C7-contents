@@ -1,0 +1,42 @@
+# Charger les packages Shiny et ggplot2
+library(shiny)
+library(ggplot2)
+
+# Définir la fonction d'interface utilisateur (UI)
+ui <- fluidPage(
+  # Ajouter un bouton pour charger un fichier de données
+  fileInput("file", "Choisir un fichier de données CSV"),
+  # Ajouter des menus déroulants pour sélectionner les colonnes à utiliser pour l'axe x et l'axe y
+  selectInput("xcol", "Colonne pour l'axe x", ""),
+  selectInput("ycol", "Colonne pour l'axe y", ""),
+  # Ajouter un bouton pour générer le graphique
+  actionButton("plot", "Générer le graphique"),
+  # Ajouter une zone pour afficher le graphique
+  plotOutput("graph")
+)
+
+# Définir la fonction de serveur (server)
+server <- function(input, output) {
+  # Lorsque l'utilisateur charge un fichier de données, lire les données et mettre à jour les menus déroulants
+  data <- reactive({
+    req(input$file)
+    read.csv(input$file$datapath)
+  })
+  observe({
+    updateSelectInput(session,"xcol",choices = names(data()))
+    updateSelectInput(session,"ycol",choices = names(data()))
+  })
+  
+  # Lorsque l'utilisateur clique sur le bouton "Générer le graphique", générer le graphique et l'afficher
+  observeEvent(input$plot, {
+    req(input$xcol, input$ycol)
+    output$graph <- renderPlot({
+      ggplot(data(), aes_string(x = input$xcol, y = input$ycol)) +
+        geom_bar(stat = "identity")
+    })
+  })
+}
+
+# Exécuter l'application Shiny
+shinyApp(ui, server)
+
